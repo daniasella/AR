@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sistem Prototipe Aplikasi Personal Trainer Berbasis Augmented Reality</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- model-viewer (simple GLB viewer) -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo">PT</div>
+      <h1>Sistem Prototipe Aplikasi Personal Trainer AR</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid two-col">
+      <!-- Left: AR Card (camera + overlay) -->
+      <section class="card ar-card left-col">
+        <h2>Mode AR (Augmented Reality)</h2>
+        <div class="ar-actions">
+          <button id="camera-toggle" class="btn">Aktifkan Kamera AR</button>
+          <span class="muted">(Izin kamera diperlukan)</span>
+        </div>
+
+        <div id="camera-area">
+          <div id="camera-overlay" class="hidden">
+            <div id="camera-container">
+              <video id="cameraVideo" autoplay muted playsinline></video>
+
+              <!-- model-viewer overlays the video when camera active -->
+              <model-viewer id="modelViewer" camera-controls exposure="1" shadow-intensity="0.5" interaction-prompt="none" alt="3D model viewer" autoplay animation-name="*" class="model-overlay hidden">
+              </model-viewer>
+
+              <div id="model-spinner" class="spinner hidden" aria-hidden="true"></div>
+
+              <div class="scanner-text">Arahkan kamera ke area latihan Anda</div>
+            </div>
+
+            <!-- Controls for 3D guide (shown when camera active) -->
+            <div id="camera-model-controls" class="controls hidden" aria-hidden="true">
+              <label class="small" for="model-select">Pilih Gerakan:</label>
+              <select id="model-select" aria-label="Pilih model 3D">
+                <!-- options are populated from js/3d-viewer.js -->
+              </select>
+              <button id="rotate-toggle" class="btn secondary" title="Pause / resume rotation">Putar</button>
+              <button id="fullscreen" class="btn" title="Fullscreen viewer">Fullscreen</button>
+            </div>
+          </div>
+
+          <p class="muted">Aktifkan kamera untuk koreksi gerakan secara real-time dan menampilkan 3D Guide di atas video.</p>
+        </div>
+      </section>
+
+      <!-- Right: Score & Controls -->
+      <aside class="card score-panel right-col">
+        <h2>Score & Kontrol Latihan</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+          <div class="score-card" style="width:100%;">
+            <div class="score-label">Repetisi</div>
+            <div class="score-value" id="score-reps">0</div>
+          </div>
+          <div class="score-card" style="width:100%;">
+            <div class="score-label">Skor</div>
+            <div class="score-value" id="score-main">0</div>
+          </div>
+
+          <div class="exercise-controls" style="width:100%; display:flex; flex-direction:column; gap:8px; align-items:center;">
+            <button id="rep-btn" class="btn">Lakukan Repetisi</button>
+            <div class="stopwatch" style="display:flex; gap:8px; align-items:center;">
+              <div id="stopwatch" style="font-weight:700; font-size:1.1rem;">00:00.0</div>
+              <div style="display:flex; gap:6px;">
+                <button id="sw-start" class="btn secondary">Mulai</button>
+                <button id="sw-stop" class="btn secondary">Berhenti</button>
+                <button id="sw-reset" class="btn secondary">Reset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <span>Sistem Prototipe Aplikasi Personal Trainer AR</span>
+      <span class="footer-divider">|</span>
+      <span>Menggunakan Koreksi Gerakan Real-Time</span>
+    </div>
+  </footer>
+
+  <script type="module" src="js/3d-viewer.js"></script>
+  <script type="module" src="js/script.js"></script>
+</body>
+
+</html>
