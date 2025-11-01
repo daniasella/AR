@@ -8,15 +8,15 @@ const models = [
 // panX/panY are pixels applied to the viewer translate; positive X -> move right, positive Y -> move down.
 // Adjust these values if a model's origin/bounding box causes it to appear off-center.
 const modelDefaults = {
-  'assets/models/pushup.glb': { panX: 0, panY: 0, scale: 1 },
+  'assets/models/pushup.glb': { panX: 0, panY: 0, scale: 0.6 },
   // Squat tends to be shifted left/up in the source GLB; nudge it right/down to match pushup visual.
-  'assets/models/squat.glb': { panX: 30, panY: 20, scale: 1 }
+  'assets/models/squat.glb': { panX: 0, panY: 0, scale: 0.6 }
 };
 
 // Per-model camera-orbit defaults (azimuth elevation radius). Radius controls perceived size.
 const modelOrbit = {
-  'assets/models/pushup.glb': '0deg 90deg 3.2m',
-  'assets/models/squat.glb': '0deg 90deg 3.0m'
+  'assets/models/pushup.glb': '0deg 60deg 2m',
+  'assets/models/squat.glb': '0deg 60deg 2m'
 };
 
 const viewer = document.getElementById('modelViewer');
@@ -66,10 +66,32 @@ function loadTransformForModel(src) {
 }
 
 function setModel(src) {
-  if (!viewer) return;
+  if (!viewer) {
+    console.error('Model viewer not found');
+    return;
+  }
+  console.log('Setting model source:', src);
+  
   // show spinner
   const spinner = document.getElementById('model-spinner');
-  spinner && spinner.classList.remove('hidden');
+  if (spinner) {
+    spinner.classList.remove('hidden');
+  }
+  
+  // Reset viewer state
+  viewer.classList.remove('hidden');
+  viewer.style.opacity = '1';
+  viewer.style.visibility = 'visible';
+  
+  // Optimize loading
+  viewer.dismissPoster();
+  viewer.loading = 'eager';
+  viewer.preload = true;
+  viewer.reveal = 'interaction';
+  
+  // Progressive loading - start with low quality
+  viewer.renderScale = 0.5;
+  
   // save transform for previous model
   if (typeof currentModelSrc !== 'undefined' && currentModelSrc) saveTransformForModel(currentModelSrc);
   viewer.src = src;
@@ -79,20 +101,23 @@ function setModel(src) {
   // (this ensures models like 'squat' start centered like 'pushup').
   const _saved = loadTransformForModel(src);
   if (!_saved) {
-    const def = modelDefaults[src] || { panX: 0, panY: 0, scale: 1 };
+    const def = modelDefaults[src] || { panX: 0, panY: 0, scale: 0.8 };
     panX = def.panX;
     panY = def.panY;
     scale = def.scale;
   }
-  // enable auto-rotate by default when selecting a model
+  // enable smooth auto-rotate by default when selecting a model
   viewer.setAttribute('auto-rotate', '');
-  // always allow user rotation
+  viewer.setAttribute('rotation-per-second', '30deg');
+  // always allow user rotation with smooth controls
   viewer.setAttribute('camera-controls', '');
+  viewer.setAttribute('interaction-prompt', 'none');
+  viewer.setAttribute('camera-target', '0 0 0');
   // center model, set FOV/zoom for proportional size
   // per-model orbit (controls perceived size)
-  const orbit = modelOrbit[src] || '0deg 90deg 3.2m';
+  const orbit = modelOrbit[src] || '0deg 75deg 2.5m';
   viewer.setAttribute('camera-orbit', orbit);
-  viewer.setAttribute('field-of-view', '45deg');
+  viewer.setAttribute('field-of-view', '30deg');
   viewer.setAttribute('animation-name', '*');
   viewer.setAttribute('autoplay', '');
   // fade out before loading
@@ -242,25 +267,76 @@ if (fsBtn && viewer) {
 
 // Camera (scan) functions
 async function startCamera() {
-  if (!navigator.mediaDevices || !cameraVideo) return;
+  const spinner = document.getElementById('model-spinner');
+  spinner.classList.remove('hidden');
+
+  if (!navigator.mediaDevices || !cameraVideo) {
+    console.error('Camera or media devices not available');
+    alert('Kamera tidak tersedia di perangkat ini');
+    spinner.classList.add('hidden');
+    return;
+  }
+
   try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-    cameraVideo.srcObject = cameraStream;
+    console.log('Requesting camera permission...');
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { 
+        facingMode: 'environment',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }, 
+      audio: false 
+    });
+    
+    console.log('Camera permission granted, starting stream...');
+    cameraVideo.srcObject = stream;
+    cameraStream = stream;
+    
+    // Wait for video to be ready
+    await new Promise((resolve) => {
+      cameraVideo.onloadedmetadata = () => {
+        console.log('Video metadata loaded');
+        resolve();
+      };
+    });
+    
     // show camera overlay and 3D model overlay controls
-    cameraOverlay?.classList.remove('hidden');
+    if (cameraOverlay) {
+      cameraOverlay.classList.remove('hidden');
+      console.log('Camera overlay visible');
+    }
+    
     // ensure model viewer is visible and flagged as in-camera
     if (viewer) {
+      console.log('Setting up model viewer...');
+      viewer.classList.remove('hidden'); // Make sure viewer is visible
       viewer.classList.add('in-camera');
+      
+      // Force reload current model
+      if (currentModelSrc) {
+        console.log('Reloading current model:', currentModelSrc);
+        setModel(currentModelSrc);
+      } else {
+        console.log('Loading default model');
+        const defaultModel = 'assets/models/pushup.glb';
+        setModel(defaultModel);
+      }
+      
       // show overlay element
       const modelOverlay = document.querySelector('.model-overlay');
       if (modelOverlay) {
+        console.log('Showing model overlay');
         modelOverlay.classList.remove('hidden');
+        modelOverlay.style.opacity = '1';
+        modelOverlay.style.visibility = 'visible';
         // trigger entrance animation classes
         modelOverlay.classList.add('entrance');
         setTimeout(() => {
           modelOverlay.classList.add('animate-in');
           modelOverlay.classList.remove('entrance');
         }, 30);
+      } else {
+        console.error('Model overlay not found');
       }
       const controls = document.getElementById('camera-model-controls');
       controls && controls.classList.remove('hidden');
@@ -299,18 +375,44 @@ function stopCamera() {
 }
 
 if (cameraToggle) {
-  cameraToggle.addEventListener('click', () => {
-    if (cameraOverlay && cameraOverlay.classList.contains('hidden')) {
-      // Try to start camera, and show overlay only if success
-      startCamera().then(() => {
-        cameraOverlay.classList.remove('hidden');
+  cameraToggle.addEventListener('click', async () => {
+    const spinner = document.getElementById('model-spinner');
+    const overlay = document.getElementById('camera-overlay');
+    
+    if (overlay && overlay.classList.contains('hidden')) {
+      try {
+        spinner.classList.remove('hidden');
+        await startCamera();
+        
+        // Show camera overlay
+        overlay.classList.remove('hidden');
+        
+        // Show model controls
+        const controls = document.getElementById('camera-model-controls');
+        if (controls) {
+          controls.classList.remove('hidden');
+          controls.removeAttribute('aria-hidden');
+        }
+        
+        // Update button text
         cameraToggle.textContent = 'Matikan Kamera AR';
-      }).catch(() => {
+        
+        // Load initial model
+        if (currentModelSrc) {
+          setModel(currentModelSrc);
+        } else if (models.length > 0) {
+          setModel(models[0].src);
+        }
+        
+      } catch (error) {
+        console.error('Camera start error:', error);
         alert('Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan.');
-      });
+        spinner.classList.add('hidden');
+      }
     } else {
       stopCamera();
       cameraToggle.textContent = 'Aktifkan Kamera AR';
+      overlay.classList.add('hidden');
     }
   });
 }
@@ -336,13 +438,35 @@ document.addEventListener('visibilitychange', () => {
 
 // Small accessibility: announce loaded model
 viewer?.addEventListener('load', () => {
+  console.log('Model loaded successfully');
   const label = select?.selectedOptions?.[0]?.text || 'model';
   viewer.setAttribute('alt', `3D model: ${label}`);
+  
   // hide spinner when model ready
   const spinner = document.getElementById('model-spinner');
   spinner && spinner.classList.add('hidden');
+  
+  // Make sure model is visible
+  viewer.classList.remove('hidden');
+  viewer.style.opacity = '1';
+  viewer.style.visibility = 'visible';
+  
   // fade in model smoothly
-  setTimeout(() => viewer.classList.add('visible'), 60);
+  setTimeout(() => {
+    viewer.classList.add('visible');
+    console.log('Model visible');
+    
+    // Gradually increase quality after load
+    setTimeout(() => {
+      viewer.renderScale = 0.75;
+      console.log('Increasing render quality to 75%');
+      setTimeout(() => {
+        viewer.renderScale = 1;
+        console.log('Increasing render quality to 100%');
+      }, 1000);
+    }, 500);
+  }, 60);
+
   // center and animate entrance when a model finishes loading in-camera
   if (viewer.classList.contains('in-camera')) {
     // if we have stored transform for this model, load it (overrides center)
@@ -351,6 +475,20 @@ viewer?.addEventListener('load', () => {
     setTimeout(() => doEntranceAnimation(), 60);
   }
 });
+
+// Add error handling
+viewer?.addEventListener('error', (error) => {
+  console.error('Error loading model:', error);
+  const spinner = document.getElementById('model-spinner');
+  spinner && spinner.classList.add('hidden');
+  alert('Gagal memuat model 3D. Silakan periksa koneksi internet Anda dan coba lagi.');
+});
+
+// Add progress monitoring
+viewer?.addEventListener('progress', (event) => {
+  console.log(`Loading progress: ${event.detail.totalProgress * 100}%`);
+});
+
 // 3D Guide toggle
 const guideToggle = document.getElementById('guide-toggle');
 const guideContent = document.getElementById('guide-content');
