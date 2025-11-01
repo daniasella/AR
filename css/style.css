@@ -1,425 +1,408 @@
-/* Center 3D model in container */
-.center-3d {
+/* ==================================================
+   Personal Trainer AR - Mobile First CSS
+   ================================================== */
+
+:root {
+  --brand-1: #1de9b6;
+  --brand-2: #00bfae;
+  --muted: #6b7280;
+  --bg-1: #e6fffa;
+  --card: #ffffff;
+  --glass: rgba(255,255,255,0.95);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg-1), #ffffff);
+  color: #00695c;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Mobile-First Header */
+header.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  padding: 8px 16px;
+  background: var(--glass);
+  box-shadow: var(--shadow-md);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand .logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
 }
 
-/* Score section below cards, responsive */
-.score-section {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  margin: 32px 0 0 0;
-  flex-wrap: wrap;
+.brand h1 {
+  font-size: 1rem;
+  margin: 0;
+  color: var(--brand-2);
 }
+
+/* Mobile-Optimized Container */
+.container {
+  width: 100%;
+  padding: 16px;
+  margin: 0 auto;
+}
+
+/* Responsive Grid */
+.grid {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.grid.two-col {
+  grid-template-columns: 1fr;
+}
+
+/* Card Styles - Mobile First */
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(30,233,182,0.08);
+  border: 1.5px solid var(--brand-1);
+  width: 100%;
+  min-height: 0;
+  margin-bottom: 16px;
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  color: var(--brand-2);
+}
+
+/* Touch-Friendly Buttons */
+.btn {
+  background: var(--brand-1);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  min-height: 48px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--brand-2);
+  border: 2px solid var(--brand-2);
+}
+
+/* AR Card and Camera */
+.ar-card {
+  padding: 16px;
+}
+
+#camera-area {
+  width: 100%;
+  margin: 0 auto;
+}
+
+#camera-container {
+  width: 100%;
+  max-height: 70vh;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+
+@supports (aspect-ratio: 1) {
+  #camera-container {
+    aspect-ratio: 9/16;
+  }
+}
+
+@supports not (aspect-ratio: 1) {
+  #camera-container::before {
+    float: left;
+    padding-top: 177.78%;
+    content: '';
+  }
+  #camera-container::after {
+    display: block;
+    content: '';
+    clear: both;
+  }
+}
+
+.model-viewer {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  --poster-color: transparent;
+  background-color: transparent;
+}
+
+model-viewer::part(default-progress-bar) {
+  background-color: var(--brand-1);
+}
+
+model-viewer::part(default-ar-button) {
+  background-color: var(--brand-1);
+}
+
+/* Mobile Controls */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  width: 100%;
+}
+
+.control-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.controls select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--brand-1);
+  font-size: 1rem;
+  background: #fff;
+  height: 48px;
+}
+
+/* Score Panel */
+.score-panel {
+  padding: 16px;
+}
+
+.score-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
 .score-card {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(30,233,182,0.10);
   border: 1.5px solid var(--brand-1);
-  padding: 18px 32px;
-  min-width: 120px;
+  padding: 16px;
+  width: 100%;
   text-align: center;
-  margin-bottom: 12px;
 }
+
 .score-label {
   color: var(--brand-2);
-  font-size: 1.05rem;
-  margin-bottom: 6px;
+  font-size: 1rem;
+  margin-bottom: 8px;
   font-weight: 600;
 }
+
 .score-value {
-  font-size: 2.1rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #00695c;
 }
 
-@media (max-width: 700px) {
-  .score-section {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .score-card {
-    width: 90%;
-    min-width: unset;
-    padding: 16px 0;
-  }
-}
-
-/* Footer improvements */
-.footer {
+/* Exercise Controls */
+.exercise-controls {
   width: 100%;
-  background: var(--bg-1);
-  padding: 18px 0 12px 0;
-  margin-top: 32px;
-  border-top: 1.5px solid var(--brand-1);
-}
-.footer-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  color: var(--brand-2);
-  font-size: 1rem;
-  font-weight: 500;
-}
-.footer-divider {
-  color: #b2dfdb;
-  font-size: 1.2rem;
-}
-/* Two-column layout for main grid */
-.grid.two-col {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 24px;
-}
-.left-col { grid-column: 1; }
-.right-col { grid-column: 2; }
-
-@media (max-width: 900px) {
-  .grid.two-col {
-    grid-template-columns: 1fr;
-  }
-  .left-col, .right-col { grid-column: 1; }
-}
-
-/* Button margin for toggles */
-#guide-toggle, #camera-toggle {
-  margin-bottom: 10px;
-}
-
-/* Fade-in animation for 3D model */
-#modelViewer {
-  opacity: 0;
-  transition: opacity 0.7s cubic-bezier(.4,1.2,.4,1);
-}
-#modelViewer.visible {
-  opacity: 1;
-}
-/* ==================================================
-   EduAR Net - Consolidated CSS (fixed syntax)
-   - cleaned up nesting errors
-   - responsive, camera overlay, spinner, animations
-   ================================================== */
-
-:root{
-  --brand-1: #1de9b6; /* tosca green */
-  --brand-2: #00bfae; /* deeper tosca */
-  --muted: #6b7280;
-  --bg-1: #e6fffa; /* light tosca/white */
-  --card: #ffffff;
-  --glass: rgba(255,255,255,0.7);
-}
-
-*{box-sizing:border-box}
-html,body{height:100%;}
-body{
-  margin:0; padding:0; font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(180deg,var(--bg-1), #ffffff); color:#00695c; -webkit-font-smoothing:antialiased;
-}
-
-/* Header / Navbar */
-
-header.site-header{
-  position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between;
-  padding:12px 4%; background:linear-gradient(180deg,var(--glass), rgba(255,255,255,0.92));
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 6px 24px rgba(30,233,182,0.10);
-}
-.brand{display:flex; align-items:center; gap:12px}
-.brand .logo{width:44px; height:44px; border-radius:8px; background:linear-gradient(135deg,var(--brand-1),var(--brand-2)); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.5rem;}
-.brand h1{font-size:1.1rem; margin:0; color:var(--brand-2)}
-
-.nav-actions{display:flex; gap:10px; align-items:center}
-.btn{background:var(--brand-1); color:#fff; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:600; transition:background .2s;}
-.btn:hover{background:var(--brand-2);}
-.btn.secondary{background:transparent; color:var(--brand-2); border:1.5px solid var(--brand-2);}
-.btn.secondary:hover{background:var(--brand-1); color:#fff;}
-
-/* Layout */
-.container{max-width:1100px; margin:28px auto; padding:0 18px}
-.grid{display:grid; grid-template-columns: 1fr; gap:18px; align-items:start}
-
-/* Center main content and ensure desktop shows both columns without vertical scroll */
-@media (min-width:1025px) {
-  .container { max-width:1200px; margin: 28px auto; padding: 12px 20px; }
-  .grid.two-col {
-    /* ensure grid fills most of the viewport but leaves space for header/footer */
-    min-height: calc(100vh - 160px);
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    gap: 28px;
-  }
-  /* Left card grows to use remaining space, right column fixed */
-  .left-col { align-self: center; }
-  .ar-card { width: 100%; max-height: calc(100vh - 220px); overflow: hidden; }
-  .score-panel { height: auto; align-self: center; }
-}
-
-/* Cards */
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 8px 30px rgba(30,233,182,0.08);
-  border: 1.5px solid var(--brand-1);
-  transition: transform .28s ease, box-shadow .28s ease, opacity .4s ease;
-  min-height: 520px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  text-align: center;
+  gap: 12px;
 }
-.card h2 {
-  margin: 0 0 8px 0;
-  font-size: 1.15rem;
-  color: var(--brand-2)
-}
-.muted{color:var(--muted); font-size:0.95rem}
 
-/* 3D Viewer area */
-.viewer-wrap{display:flex; flex-direction:column; gap:12px}
-.model-viewer-card{height:420px; border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
-/* 3D Guide: background putih solid agar model selalu kontras */
-/* 3D Guide: background gradasi tosca-putih agar model tetap kontras dan tidak polos */
-.model-viewer-container {
-  flex: 1;
-  background: linear-gradient(135deg, #e6fffa 60%, #b2fef7 100%);
+.stopwatch {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  border-radius: 12px;
-}
-/* Make the <model-viewer> background transparent so the camera video shows through */
-model-viewer {
   width: 100%;
-  height: 100%;
-  background: transparent !important;
-  background-color: transparent !important;
-  display: block;
-  border-radius: 12px;
 }
 
-/* Styles for model overlay inside camera */
-.model-overlay {
+#stopwatch {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 8px 0;
+}
+
+.timer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Scanner Text */
+.scanner-text {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  z-index: 5;
+}
+
+/* Loading States */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(30,233,182,0.1);
+  border-top-color: var(--brand-1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%;
-  pointer-events: auto; /* allow interacting with the 3D model (drag/rotate) */
-  z-index: 3;
-  transition: transform 300ms ease, opacity 280ms ease;
-  opacity: 0;
-}
-.model-overlay.visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  z-index: 10;
 }
 
-/* Give a subtle entrance animation when viewer becomes in-camera */
-.model-overlay.entrance {
-  transform: translate(-50%, -55%) scale(0.96);
-  opacity: 0;
-}
-.model-overlay.animate-in {
-  animation: overlayIn 420ms cubic-bezier(.2,.9,.3,1) forwards;
-}
-@keyframes overlayIn {
-  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-/* Camera container ensures overlay and video stack correctly */
-#camera-container{position:relative; width:100%; max-width:960px; margin:0 auto; border-radius:12px; overflow:hidden}
-#camera-container video{z-index:1; width:100%; height:100%; object-fit:cover; display:block}
-#camera-container .scanner-text{z-index:4}
-
-/* maintain a responsive aspect ratio for camera area */
-#camera-container{aspect-ratio: 16 / 9; background:#000;}
-
-/* Controls inside camera should be above overlay but still clickable */
-/* Controls under the camera area: vertical layout to save horizontal space */
-#camera-model-controls{
-  z-index:5;
-  margin-top:12px;
-  display:flex;
-  gap:8px;
-  align-items:stretch;
-  flex-direction:column;
-}
-#camera-model-controls label.small{margin-bottom:6px}
-#camera-model-controls select{width:100%; padding:8px; border-radius:8px}
-#camera-model-controls .btn{pointer-events:auto; width:100%;}
-
-/* Card layout improvements for UI/UX */
-.ar-card{max-width:1100px; margin:18px auto; padding:20px}
-.ar-card h2{margin-bottom:8px}
-.ar-actions{display:flex; gap:12px; align-items:center; justify-content:center; margin-bottom:12px}
-
-/* When camera not active, show muted explanatory area */
-#camera-area p.muted{margin-top:12px}
-
-/* model-viewer when placed inside camera */
-
-/* Remove absolute overlay for in-camera, use static layout for AR and 3D Guide */
-.model-viewer.in-camera {
-  position: static !important;
-  width: 100% !important;
-  height: 100% !important;
-  left: unset !important;
-  top: unset !important;
-  transform: none !important;
-  box-shadow: none !important;
-  border-radius: 10px;
-  background: transparent !important;
-  background-color: transparent !important;
-  z-index: auto;
-}
-.model-viewer.in-camera.entrance {
-  opacity: 1;
-  transform: none;
-}
-
-
-/* Loading spinner */
-.spinner{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; border:6px solid rgba(255,255,255,0.15); border-top-color:var(--brand-2); animation:spin 1s linear infinite; box-shadow:0 8px 20px rgba(3,100,180,0.12)}
-.model-viewer-container .spinner.hidden{display:none}
-
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-
-/* Responsive sizes for in-camera floating viewer */
-@media (max-width:640px){
-  .model-viewer.in-camera{width:70%; height:44%;}
-}
-@media (min-width:641px) and (max-width:1024px){
-  .model-viewer.in-camera{width:56%; height:52%;}
-}
-@media (min-width:1025px){
-  .model-viewer.in-camera{width:42%; height:48%;}
-}
-
-/* Camera / Scanner overlay */
-.camera-area { position: relative; }
-#camera-overlay{
-  position: static;
-  width: 100%;
-  height: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  background: #00000018;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-#camera-container{
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-}
-/* video should be the visual background */
-#camera-container video{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: contrast(0.95) saturate(1.05);
-  z-index: 1;
-  pointer-events: none;
-  background: #000;
-}
-.model-viewer.in-camera{z-index:2}
-.scan-line{position:absolute; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, rgba(0,170,255,0.9), transparent); animation:scanMove 2s linear infinite}
-.scanner-text{
-  position: absolute;
-  bottom: 14px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: #fff;
-  font-weight: 600;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-  background: rgba(0,0,0,0.18);
-  border-radius: 6px;
-  padding: 4px 0;
-}
-/* removed .dummy-3d - no longer used */
-
-/* visibility helpers */
-.hidden{display:none}
-
-/* Fade & hover */
-.card:hover{transform:translateY(-8px) scale(1.01); box-shadow:0 16px 40px rgba(15,23,42,0.12)}
-
-@keyframes fadeIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
-@keyframes rotateDummy{from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(360deg)}}
-@keyframes scanMove{0%{top:0;} 100%{top:100%}}
-
-.controls{display:flex; gap:8px; padding:12px; align-items:center}
-.controls select{padding:8px 10px; border-radius:8px; border:1px solid #e6edf3}
-.controls .small{font-size:0.9rem}
-
-/* Make the rotate toggle in the model controls larger on all viewports for easier tapping */
-.controls #rotate-toggle {
-  padding: 10px 16px;
-  font-size: 1rem;
-  min-width: 96px;
-  border-radius: 12px;
-}
-
-/* Slightly increase prominence on desktop */
-@media (min-width:1025px) {
-  .controls #rotate-toggle { padding:12px 18px; min-width:120px; font-size:1.05rem; }
-}
-
-/* Responsive adjustments for two-column layout */
-@media (max-width: 980px) {
-  .grid.two-col { grid-template-columns: 1fr; }
-  .score-panel { order: 2; }
-  .ar-card { order: 1; }
-  .model-overlay { width: 92%; height: 92%; }
-}
-
-/* Mobile navbar adjustments: nudge brand slightly to the right for better mobile visual balance */
-@media (max-width: 640px) {
-  header.site-header { padding-left: 6%; padding-right: 6%; }
-  .brand { margin-left: 6%; }
-  .brand h1 { font-size: 0.98rem; }
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* Footer */
-footer{padding:18px 4%; text-align:center; color:var(--brand-2); font-size:0.95rem; font-weight:500;}
-
-/* Utilities */
-.center{text-align:center}
-
-/* Animations */
-@keyframes floatUp{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
-
-/* Responsive adjustments */
-@media(max-width:980px){
-  .model-viewer-card{height:320px}
-  .card{min-height:unset;}
+.footer {
+  width: 100%;
+  background: var(--bg-1);
+  padding: 16px;
+  margin-top: 24px;
+  border-top: 1.5px solid var(--brand-1);
 }
 
-/* Desktop adjustments: make AR camera card and 3D guide card longer on wide screens
-   and provide a taller card container so content feels less cramped. */
-@media (min-width:1025px) {
-  /* Make the 3D guide card taller */
-  .model-viewer-card { height: 560px; }
-  /* Make the in-camera overlay taller so the AR camera area appears longer */
-  #camera-overlay { height: 520px; }
-  /* Slightly larger in-camera viewer on desktop for more presence */
-  .model-viewer.in-camera { width: 48%; height: 62%; }
-  /* Increase card min-height on desktop to accommodate larger viewers */
-  .card { min-height: 620px; }
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--brand-2);
+  font-size: 0.9rem;
+}
+
+.footer-divider {
+  color: var(--brand-2);
+  opacity: 0.5;
+}
+
+/* Utility Classes */
+.hidden { display: none !important; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+
+/* Animations */
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Desktop Styles */
+@media (min-width: 768px) {
+  .container {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .grid.two-col {
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+  }
+
+  .brand h1 {
+    font-size: 1.1rem;
+  }
+
+  #camera-container {
+    aspect-ratio: 16/9;
+    max-height: 80vh;
+  }
+
+  .control-buttons {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .btn {
+    width: auto;
+  }
+
+  .timer-controls {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .footer-content {
+    flex-direction: row;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .card {
+    padding: 24px;
+  }
+}
+
+/* Large Desktop Adjustments */
+@media (min-width: 1200px) {
+  .container {
+    padding: 32px;
+  }
+
+  .grid.two-col {
+    grid-template-columns: 1fr 400px;
+  }
+
+  .card {
+    padding: 32px;
+  }
 }
